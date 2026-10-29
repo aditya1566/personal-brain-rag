@@ -1,0 +1,15 @@
+📋 Session Summary & Project StateProject OverviewRepository: personal-brain-backendStack: Node.js (ESM), Express, TypeScript (NodeNext module resolution), Prisma 7 (@prisma/adapter-pg), Neon PostgreSQL, Bcrypt, JWT (jsonwebtoken), tsx.Key Decisions & Implemented ArchitectureAuthentication Flow:User Registration (POST /api/auth/register): Hashes passwords using bcrypt (10 salt rounds), creates User records in Neon PostgreSQL, and strips passwordHash from the response.User Login (POST /api/auth/login): Validates credentials and returns a signed stateless JWT token (expiresIn: '7d').Middleware (authenticateToken): Validates Bearer <token> headers from Authorization headers, decodes the user payload, and attaches userId and email to req.user.TypeScript & Module Configuration:ES Module Imports: Relative imports retain .js extensions (e.g., import prisma from '../config/db.js') to comply with Node.js ESM/NodeNext module resolution.Express Type Augmentation: Created src/types/express/index.d.ts extending Express.Request with user?: { userId: string; email: string; }.Environment Variables: Used import 'dotenv/config' across config and middleware files to guarantee .env variables load prior to runtime module evaluation.Database Setup (src/config/db.ts):Configured Prisma 7 with the @prisma/adapter-pg driver adapter for Neon PostgreSQL over SSL (?sslmode=require).Configured a global singleton instance for PrismaClient to avoid connection exhaustion in dev mode.Project Directory MapPlaintextpersonal-brain-backend/
+├── .env                          # DATABASE_URL, JWT_SECRET, PORT
+├── tsconfig.json                 # Target ES2022, NodeNext resolution
+├── src/
+│   ├── server.ts                 # Express initialization & router hooks
+│   ├── config/
+│   │   └── db.ts                 # Prisma Client setup with pg adapter
+│   ├── controllers/
+│   │   └── auth.controller.ts    # register() and login()
+│   ├── middlewares/
+│   │   └── auth.middleware.ts    # authenticateToken() JWT validator
+│   └── types/
+│       └── express/
+│           └── index.d.ts        # Global Express Request typing for req.user
+Tested Endpoints (Verified in Postman)GET / $\rightarrow$ 200 OK (Health Check)POST /api/auth/register $\rightarrow$ 201 CreatedPOST /api/auth/login $\rightarrow$ 200 OK (Returns JWT token)GET /api/protected/me $\rightarrow$ 200 OK (Verified using Authorization: Bearer <JWT>)

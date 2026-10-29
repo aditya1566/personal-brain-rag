@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@langchain/textsplitters": "^1.0.1",
+    "pdf-parse": "^2.4.5"
+  },
+  "devDependencies": {
+    "@types/pdf-parse": "^1.1.5"
+  }
+}
